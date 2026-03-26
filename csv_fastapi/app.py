@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 import pandas as pd
 import numpy as np  # ✅ Fix: was missing — caused the NameError
@@ -141,3 +142,79 @@ def read_csv():
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to read file: {e}")
+=======
+from fastapi import FastAPI, HTTPException, Query
+from services.data_service import DataService
+from models.student_model import Student
+
+app = FastAPI()
+
+data_service = DataService(r"services\students_complete.csv")
+
+# ✅ GET all data
+@app.get("/data")
+def get_data():
+    df = data_service.get_all()
+
+    if df is None or df.empty:
+        raise HTTPException(status_code=404, detail="No data found")
+
+    return df.to_dict(orient="records")
+
+
+# ✅ GET by ID
+@app.get("/data/{student_id}", response_model=Student)
+def get_student(student_id: str):
+    result = data_service.get_by_student_id(student_id)
+
+    if result.empty:
+        raise HTTPException(status_code=404, detail="Record not found")
+
+    return Student(**result.to_dict(orient="records")[0])
+
+
+# ✅ FILTER (exact match)
+@app.get("/filter/")
+def filter_data(column: str, value: str):
+    try:
+        result = data_service.filter_data(column, value)
+
+        if result.empty:
+            return {"message": "No matching records"}
+
+        return result.to_dict(orient="records")
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+# ✅ SEARCH (contains keyword)
+@app.get("/search/")
+def search_data(column: str, keyword: str):
+    try:
+        result = data_service.search_data(column, keyword)
+
+        if result.empty:
+            return {"message": "No matching records"}
+
+        return result.to_dict(orient="records")
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+# ✅ PAGINATION
+@app.get("/data_paginated/")
+def get_paginated(page: int = Query(1, ge=1), limit: int = Query(10, ge=1)):
+    df = data_service.get_all()
+
+    start = (page - 1) * limit
+    end = start + limit
+
+    return {
+        "page": page,
+        "limit": limit,
+        "total": len(df),
+        "data": df.iloc[start:end].to_dict(orient="records")
+    }
+>>>>>>> 87e0fbab (third commit)
