@@ -1,12 +1,12 @@
-<<<<<<< HEAD
+
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 import pandas as pd
-import numpy as np  # ✅ Fix: was missing — caused the NameError
+import numpy as np  
 import os
 
 app = FastAPI()
 
-# Global variable to store uploaded data
+
 df_global = None
 
 
@@ -142,7 +142,7 @@ def read_csv():
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to read file: {e}")
-=======
+
 from fastapi import FastAPI, HTTPException, Query
 from services.data_service import DataService
 from models.student_model import Student
@@ -217,4 +217,4 @@ def get_paginated(page: int = Query(1, ge=1), limit: int = Query(10, ge=1)):
         "total": len(df),
         "data": df.iloc[start:end].to_dict(orient="records")
     }
->>>>>>> 87e0fbab (third commit)
+

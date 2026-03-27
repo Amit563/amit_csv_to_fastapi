@@ -50,4 +50,4 @@ class DataService:
 
 
 # ✅ FIX: pass file_path here
-data_service = DataService(r"C:\Users\AmitKumar\Desktop\Project_CSV\csv_fastapi\services\students_complete.csv")
+data_service = DataService(r"services\students_complete.csv")
